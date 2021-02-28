@@ -1,12 +1,15 @@
 import { Request, Response } from 'express';
 import { getCustomRepository } from 'typeorm';
 import { SurveysRepository } from '../repositories/SurveysRepository';
+import { SurveysIndexService } from '../services/SurveysIndexService';
 
 class SurveysController {
   async index(req: Request, res: Response) {
-    const surveysRepo = getCustomRepository(SurveysRepository);
+    const surveysRepository = getCustomRepository(SurveysRepository);
 
-    const surveys = await surveysRepo.findAndCount();
+    const surveysIndexService = new SurveysIndexService(surveysRepository);
+
+    const surveys = await surveysIndexService.execute();
 
     return res.status(200).json({
       surveys: surveys[0],

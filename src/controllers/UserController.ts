@@ -3,6 +3,7 @@ import { getCustomRepository } from 'typeorm';
 import { UsersRepository } from '../repositories/UsersRepository';
 import { AppError } from '../errors/AppError';
 import { UserCreateService } from '../services/UserCreateService';
+import { UserDeleteService } from '../services/UserDeleteService';
 
 class UserController {
   async index(req: Request, res: Response) {
@@ -46,15 +47,11 @@ class UserController {
   async delete(req: Request, res: Response) {
     const { id } = req.params;
 
-    const userRepo = getCustomRepository(UsersRepository);
+    const usersRepository = getCustomRepository(UsersRepository);
 
-    const userAlreadyExists = await userRepo.findOne({ id });
+    const userDeleteService = new UserDeleteService(usersRepository);
 
-    if (!userAlreadyExists) {
-      throw new AppError('User does not exists');
-    }
-
-    await userRepo.delete(id);
+    await userDeleteService.execute(id);
 
     return res.status(200).json();
   }

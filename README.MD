@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="public/github/nlw4.jpg" alt="Next Level Week #4">
+    <img src="https://pbs.twimg.com/media/Eu1c2_SXUAU6JPa.jpg" alt="Next Level Week #4">
 </div>
 
 <div align="center">
@@ -7,19 +7,12 @@
     <img src="https://img.shields.io/badge/-Node.js-orange?style=for-the-badge" alt="Node.js">
     <img src="https://img.shields.io/badge/-Express-white?style=for-the-badge" alt="Express">
     <p>    
-        Feito com 💜 by <a href="https://www.linkedin.com/in/gustavo-sorati/" target="_blank">Gustavo Sorati</a>
+        By <a href="https://www.instagram.com/ribeiro.romerio" target="_blank">Romério Ribeiro</a>
     </p>
 </div>
 
 <h4 align="center">
 </h4>
-
-<div align="center">
-    <h2>
-    <a href="#-o-projeto">O projeto</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-    <a href="#">Iniciando a jornada</a>
-    </h2>
-</div>
 
 # O projeto
 

@@ -1,15 +1,18 @@
 import { Request, Response } from 'express';
 import { getCustomRepository } from 'typeorm';
 import { UsersRepository } from '../repositories/UsersRepository';
-import { AppError } from '../errors/AppError';
+// import { AppError } from '../errors/AppError';
 import { UserCreateService } from '../services/UserCreateService';
 import { UserDeleteService } from '../services/UserDeleteService';
+import { UserIndexService } from '../services/UserIndexService';
 
 class UserController {
   async index(req: Request, res: Response) {
-    const usersRepo = getCustomRepository(UsersRepository);
+    const usersRepository = getCustomRepository(UsersRepository);
 
-    const users = await usersRepo.findAndCount();
+    const usersIndexService = new UserIndexService(usersRepository);
+
+    const users = await usersIndexService.execute();
 
     return res.status(200).json({
       users: users[0],
@@ -21,21 +24,6 @@ class UserController {
     const { name, email } = req.body;
 
     const usersRepository = getCustomRepository(UsersRepository);
-
-    // const userAlreadyExists = await usersRepository.findOne({
-    //   email,
-    // });
-
-    // if (userAlreadyExists) {
-    //   throw new AppError('User already exists');
-    // }
-
-    // const user = usersRepository.create({
-    //   name,
-    //   email,
-    // });
-
-    // await usersRepository.save(user);
 
     const userCreateService = new UserCreateService(usersRepository);
 

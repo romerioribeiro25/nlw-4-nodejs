@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { getCustomRepository } from 'typeorm';
 import { SurveysRepository } from '../repositories/SurveysRepository';
 import { SurveysIndexService } from '../services/SurveysIndexService';
+import { SurveysShowService } from '../services/SurveysShowService';
 
 class SurveysController {
   async index(req: Request, res: Response) {
@@ -20,17 +21,13 @@ class SurveysController {
   async show(req: Request, res: Response) {
     const { id } = req.params;
 
-    const surveyRepo = getCustomRepository(SurveysRepository);
+    const surveyRepository = getCustomRepository(SurveysRepository);
 
-    const surveyAlreadyExists = await surveyRepo.findOne({ id });
+    const surverysShowService = new SurveysShowService(surveyRepository);
 
-    if (!surveyAlreadyExists) {
-      return res.status(400).json({
-        error: 'Survey not found!',
-      });
-    }
+    const survery = await surverysShowService.execute(id);
 
-    return res.status(200).json(surveyAlreadyExists);
+    return res.status(200).json(survery);
   }
 
   async create(req: Request, res: Response) {

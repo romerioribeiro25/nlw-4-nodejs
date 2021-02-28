@@ -19,16 +19,16 @@ class UserController {
   async create(req: Request, res: Response) {
     const { name, email } = req.body;
 
-    let schema = yup.object().shape({
-      name: yup.string().required(),
-      email: yup.string().email().required(),
-    });
+    // let schema = yup.object().shape({
+    //   name: yup.string().required(),
+    //   email: yup.string().email().required(),
+    // });
 
-    try {
-      await schema.validate(req.body, { abortEarly: false });
-    } catch (err) {
-      throw new AppError(err);
-    }
+    // try {
+    //   await schema.validate(req.body, { abortEarly: false });
+    // } catch (err) {
+    //   throw new AppError(err);
+    // }
 
     const usersRepository = getCustomRepository(UsersRepository);
 

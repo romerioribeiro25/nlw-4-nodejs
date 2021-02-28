@@ -5,6 +5,10 @@ import { UserController } from './controllers/UserController';
 import { AnswerController } from './controllers/AnswerController';
 import { NpsController } from './controllers/NpsController';
 
+import { schemaValidate } from './middlewares/schemaValidate';
+import { UserDto } from './dtos/userDto';
+import { SurveysDto } from './dtos/surveysDto';
+
 const router = Router();
 
 const userController = new UserController();
@@ -13,13 +17,20 @@ const sendMailController = new SendMailController();
 const answerController = new AnswerController();
 const npsController = new NpsController();
 
+const userDto = new UserDto();
+const surveysDto = new SurveysDto();
+
 router.get('/users', userController.index);
-router.post('/users', userController.create);
+router.post('/users', schemaValidate(userDto.create()), userController.create);
 router.delete('/users/:id', userController.delete);
 
 router.get('/surveys', surveysController.index);
 router.get('/surveys/:id', surveysController.show);
-router.post('/surveys', surveysController.create);
+router.post(
+  '/surveys',
+  schemaValidate(surveysDto.create()),
+  surveysController.create
+);
 
 router.post('/sendMail', sendMailController.execute);
 

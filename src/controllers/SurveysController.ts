@@ -3,6 +3,7 @@ import { getCustomRepository } from 'typeorm';
 import { SurveysRepository } from '../repositories/SurveysRepository';
 import { SurveysIndexService } from '../services/SurveysIndexService';
 import { SurveysShowService } from '../services/SurveysShowService';
+import { SurveysCreateService } from '../services/SurveysCreateService';
 
 class SurveysController {
   async index(req: Request, res: Response) {
@@ -35,9 +36,9 @@ class SurveysController {
 
     const surveysRepository = getCustomRepository(SurveysRepository);
 
-    const survey = surveysRepository.create({ title, description });
+    const surverysCreateService = new SurveysCreateService(surveysRepository);
 
-    await surveysRepository.save(survey);
+    const survey = await surverysCreateService.execute({ title, description });
 
     return res.status(201).json(survey);
   }

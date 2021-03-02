@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
-import { getCustomRepository, Not, IsNull } from 'typeorm';
+import { getCustomRepository } from 'typeorm';
 import { SurveysUserRepository } from '../repositories/SurveysUserRepository';
+import { NpsShowService } from '../services/NpsShowService';
 
 /***
  * 1 2 3 4 5 6 7 8 9
@@ -11,40 +12,27 @@ import { SurveysUserRepository } from '../repositories/SurveysUserRepository';
  */
 
 class NpsController {
-  async execute(req: Request, res: Response) {
+  async show(req: Request, res: Response) {
     const { survey_id } = req.params;
 
     const surveysUsersRepo = getCustomRepository(SurveysUserRepository);
 
-    const surveysUsers = await surveysUsersRepo.find({
-      survey_id,
-      value: Not(IsNull()),
-    });
+    const npsShowService = new NpsShowService(surveysUsersRepo);
 
-    const detractor = surveysUsers.filter(
-      (survey) => survey.value >= 0 && survey.value <= 6
-    ).length;
-
-    const promoters = surveysUsers.filter(
-      (survey) => survey.value >= 9 && survey.value <= 10
-    ).length;
-
-    const passive = surveysUsers.filter(
-      (survey) => survey.value >= 7 && survey.value <= 8
-    ).length;
-
-    const totalAnswers = surveysUsers.length;
-
-    const calculate = (((promoters - detractor) / totalAnswers) * 100).toFixed(
-      2
-    );
+    const {
+      detractor,
+      promoters,
+      passive,
+      totalAnswers,
+      nps,
+    } = await npsShowService.execute(survey_id);
 
     return res.json({
       detractor,
       promoters,
       passive,
       totalAnswers,
-      nps: Number(calculate),
+      nps,
     });
   }
 }

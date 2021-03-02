@@ -37,6 +37,6 @@ router.post('/sendMail', sendMailController.execute);
 
 router.get('/answers/:value', answerController.execute);
 
-router.get('/nps/:survey_id', npsController.execute);
+router.get('/nps/:survey_id', npsController.show);
 
 export { router };

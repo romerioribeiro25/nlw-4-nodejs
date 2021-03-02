@@ -1,27 +1,31 @@
-import { Request, response, Response } from 'express';
-import { getCustomRepository } from 'typeorm';
-import { SurveysRepository } from '../repositories/SurveysRepository';
-import { UsersRepository } from '../repositories/UsersRepository';
-import { SurveysUserRepository } from '../repositories/SurveysUserRepository';
-import SendMailService from '../services/SendMailServices';
 import path from 'path';
+
+import { UsersRepository } from '../repositories/UsersRepository';
+import { SurveysRepository } from '../repositories/SurveysRepository';
+import { SurveysUserRepository } from '../repositories/SurveysUserRepository';
+import { SurveyUserSendMailDTO } from '../dtos/SurveyUserSendMailDTO';
 import { AppError } from '../errors/AppError';
+import SendMailService from './SendMailServices';
+import { SurveyUser } from '../models/SurveyUser';
 
-class SendMailController {
-  async execute(req: Request, res: Response) {
-    const { email, survey_id } = req.body;
+class SurveyUserSendMailService {
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly surveysRepository: SurveysRepository,
+    private readonly surveysUserRepository: SurveysUserRepository
+  ) {}
 
-    const usersRepository = getCustomRepository(UsersRepository);
-    const surveysRepository = getCustomRepository(SurveysRepository);
-    const surveysUserRepository = getCustomRepository(SurveysUserRepository);
-
-    const user = await usersRepository.findOne({ email });
+  async execute({
+    email,
+    survey_id,
+  }: SurveyUserSendMailDTO): Promise<SurveyUser> {
+    const user = await this.usersRepository.findOne({ email });
 
     if (!user) {
       throw new AppError('User does not exists!');
     }
 
-    const survey = await surveysRepository.findOne({ id: survey_id });
+    const survey = await this.surveysRepository.findOne({ id: survey_id });
 
     if (!survey) {
       throw new AppError('Survey does not exists!');
@@ -35,7 +39,7 @@ class SendMailController {
       'npsMail.hbs'
     );
 
-    const surveyUserAlreadyExists = await surveysUserRepository.findOne({
+    const surveyUserAlreadyExists = await this.surveysUserRepository.findOne({
       where: { user_id: user.id, value: null },
       relations: ['user', 'survey'],
     });
@@ -51,23 +55,23 @@ class SendMailController {
     if (surveyUserAlreadyExists) {
       variables.id = surveyUserAlreadyExists.id;
       await SendMailService.execute(email, survey.title, variables, npsPath);
-      return res.json(surveyUserAlreadyExists);
+      return surveyUserAlreadyExists;
     }
 
     // Salvar as informações na Tabela surveyUser
-    const surveyUser = surveysUserRepository.create({
+    const surveyUser = this.surveysUserRepository.create({
       user_id: user.id,
       survey_id,
     });
 
-    await surveysUserRepository.save(surveyUser);
+    await this.surveysUserRepository.save(surveyUser);
 
     variables.id = surveyUser.id;
 
     await SendMailService.execute(email, survey.title, variables, npsPath);
 
-    return res.json(surveyUser);
+    return surveyUser;
   }
 }
 
-export { SendMailController };
+export { SurveyUserSendMailService };

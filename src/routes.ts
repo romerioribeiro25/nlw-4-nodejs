@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { SendMailController } from './controllers/SendMailController';
+import { SurveyUserSendMailController } from './controllers/SurveyUserSendMailController';
 import { SurveysController } from './controllers/SurveysController';
 import { UserController } from './controllers/UserController';
 import { AnswerController } from './controllers/AnswerController';
@@ -13,7 +13,7 @@ const router = Router();
 
 const userController = new UserController();
 const surveysController = new SurveysController();
-const sendMailController = new SendMailController();
+const surveyUserSendMailController = new SurveyUserSendMailController();
 const answerController = new AnswerController();
 const npsController = new NpsController();
 
@@ -33,7 +33,7 @@ router.post(
   surveysController.create
 );
 
-router.post('/sendMail', sendMailController.execute);
+router.post('/sendMail', surveyUserSendMailController.handle);
 
 router.get('/answers/:value', answerController.execute);
 
